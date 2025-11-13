@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+
+{% block title %}Nueva Venta{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-custom text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-cart-plus me-2"></i>Nueva Venta
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="ventaForm">
+                        {% csrf_token %}
+                        
+                        <!-- Información del Cliente -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-user me-2"></i>Información del Cliente
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Cliente *</label>
+                                    <select name="cliente" class="form-select" required id="clienteSelect">
+                                        <option value="">Seleccionar cliente...</option>
+                                        {% for cliente in clientes %}
+                                        <option value="{{ cliente.clienteid }}">{{ cliente.nombre }} {{ cliente.apellido }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Método de Pago *</label>
+                                    <select name="metodopago" class="form-select" required>
+                                        <option value="">Seleccionar método...</option>
+                                        <option value="EFECTIVO">Efectivo</option>
+                                        <option value="TARJETA">Tarjeta</option>
+                                        <option value="TRANSFERENCIA">Transferencia</option>
+                                        <option value="DIGITAL">Pago Digital</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles de la Venta -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-list me-2"></i>Detalles de la Venta
+                            </h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">Libro</label>
+                                    <select class="form-select" id="libroSelect">
+                                        <option value="">Seleccionar libro...</option>
+                                        {% for libro in libros %}
+                                        <option value="{{ libro.libroid }}" 
+                                                data-precio="{{ libro.precioventa }}"
+                                                data-stock="{{ libro.stock }}">
+                                            {{ libro.titulo }} - ${{ libro.precioventa }} (Stock: {{ libro.stock }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Cantidad</label>
+                                    <input type="number" class="form-control" id="cantidadInput" min="1" value="1">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Precio Unitario</label>
+                                    <input type="number" class="form-control" id="precioInput" step="0.01" readonly>
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-success w-100" id="agregarDetalle">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Tabla de Detalles -->
+                            <div class="table-responsive">
+                                <table class="table table-sm" id="tablaDetalles">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Libro</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio Unit.</th>
+                                            <th>Subtotal</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Los detalles se agregarán dinámicamente -->
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                            <td><strong id="totalVenta">$0.00</strong></td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Información Adicional -->
+                        <div class="mb-3">
+                            <label class="form-label">Descuento Aplicado (%)</label>
+                            <input type="number" name="descuentoAplicado" class="form-control" 
+                                   value="0" min="0" max="100" step="0.01">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Estado de la Venta</label>
+                            <select name="estadoVenta" class="form-select">
+                                <option value="PENDIENTE">Pendiente</option>
+                                <option value="COMPLETADA" selected>Completada</option>
+                                <option value="CANCELADA">Cancelada</option>
+                                <option value="EN_PROCESO">En Proceso</option>
+                            </select>
+                        </div>
+
+                        <input type="hidden" name="detalles" id="detallesInput">
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_ventas' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-custom" id="submitVenta">
+                                <i class="fas fa-save me-2"></i>Procesar Venta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+// JavaScript para manejar los detalles de venta dinámicos
+document.addEventListener('DOMContentLoaded', function() {
+    const detalles = [];
+    
+    // Actualizar precio cuando se selecciona un libro
+    document.getElementById('libroSelect').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const precio = selectedOption.getAttribute('data-precio');
+        document.getElementById('precioInput').value = precio || '';
+    });
+    
+    // Agregar detalle a la tabla
+    document.getElementById('agregarDetalle').addEventListener('click', function() {
+        const libroSelect = document.getElementById('libroSelect');
+        const selectedOption = libroSelect.options[libroSelect.selectedIndex];
+        const cantidad = document.getElementById('cantidadInput').value;
+        const precio = document.getElementById('precioInput').value;
+        
+        if (!selectedOption.value || !cantidad || !precio) {
+            alert('Por favor complete todos los campos del detalle');
+            return;
+        }
+        
+        const libroId = selectedOption.value;
+        const libroNombre = selectedOption.text.split(' - ')[0];
+        const subtotal = (cantidad * precio).toFixed(2);
+        
+        // Agregar a la tabla
+        const tablaBody = document.querySelector('#tablaDetalles tbody');
+        const row = tablaBody.insertRow();
+        row.innerHTML = `
+            <td>${libroNombre}</td>
+            <td>${cantidad}</td>
+            <td>$${precio}</td>
+            <td>$${subtotal}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger remove-row">
+                    <i class="fas fa-times"></i>
+                </button>
+            </td>
+        `;
+        
+        // Agregar al array de detalles
+        detalles.push({
+            libro: libroId,
+            cantidad: cantidad,
+            precioUnitario: precio,
+            subtotal: subtotal
+        });
+        
+        // Actualizar total
+        actualizarTotal();
+        
+        // Limpiar campos
+        libroSelect.value = '';
+        document.getElementById('cantidadInput').value = 1;
+        document.getElementById('precioInput').value = '';
+        
+        // Agregar evento para eliminar fila
+        row.querySelector('.remove-row').addEventListener('click', function() {
+            const index = Array.from(tablaBody.rows).indexOf(row);
+            detalles.splice(index, 1);
+            row.remove();
+            actualizarTotal();
+        });
+    });
+    
+    function actualizarTotal() {
+        const total = detalles.reduce((sum, detalle) => sum + parseFloat(detalle.subtotal), 0);
+        document.getElementById('totalVenta').textContent = `$${total.toFixed(2)}`;
+    }
+    
+    // Preparar datos antes de enviar el formulario
+    document.getElementById('ventaForm').addEventListener('submit', function(e) {
+        if (detalles.length === 0) {
+            e.preventDefault();
+            alert('Debe agregar al menos un libro a la venta');
+            return;
+        }
+        
+        document.getElementById('detallesInput').value = JSON.stringify(detalles);
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

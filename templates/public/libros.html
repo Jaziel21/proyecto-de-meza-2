@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libros - Librería AJMG 1194</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --verde-oscuro: #2e7d32;
+            --verde-medio: #4caf50;
+            --verde-claro: #81c784;
+        }
+        body {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .public-table {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .public-table thead {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+            color: white;
+        }
+        .navbar-public {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+        }
+        .book-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar Pública -->
+    <nav class="navbar navbar-expand-lg navbar-public">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-verde-oscuro" href="{% url 'inicio_publico' %}">
+                <i class="fas fa-book me-2"></i>Librería AJMG 1194
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a href="{% url 'inicio_publico' %}" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-home me-2"></i>Inicio
+                </a>
+                <a href="{% url 'inicio_sesion' %}" class="btn btn-custom">
+                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="public-table">
+                    <div class="p-4 border-bottom">
+                        <h2 class="text-verde-oscuro mb-0">
+                            <i class="fas fa-book me-2"></i>Catálogo de Libros
+                        </h2>
+                        <p class="text-muted mb-0">Explora nuestra colección - Solo visualización</p>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="row">
+                            {% for libro in libros %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="book-card">
+                                    <h5 class="fw-bold text-verde-oscuro">{{ libro.titulo }}</h5>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-user me-1"></i>{{ libro.autor.nombre }} {{ libro.autor.apellido }}
+                                    </p>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-building me-1"></i>{{ libro.editorial.nombreeditorial }}
+                                    </p>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-barcode me-1"></i>ISBN: {{ libro.isbn }}
+                                    </p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-success">${{ libro.precioventa }}</span>
+                                        <span class="badge bg-{% if libro.stock > 0 %}primary{% else %}secondary{% endif %}">
+                                            Stock: {{ libro.stock }}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col-12 text-center py-5">
+                                <i class="fas fa-book fa-3x text-muted mb-3"></i>
+                                <p class="text-muted">No hay libros registrados en el catálogo</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-light border-top">
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Información:</strong> Para gestionar el catálogo de libros, 
+                            <a href="{% url 'inicio_sesion' %}" class="alert-link">inicia sesión</a>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    .btn-custom {
+        background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);
+        color: white;
+        border: none;
+    }
+    .text-verde-oscuro { color: var(--verde-oscuro); }
+    </style>
+</body>
+</html>

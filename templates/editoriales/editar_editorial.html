@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Editorial{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Editar Editorial: {{ editorial.nombreeditorial }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="editorialForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 text-warning">
+                                <i class="fas fa-info-circle me-2"></i>Información Básica
+                            </h5>
+                            
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Nombre Editorial *</label>
+                                <input type="text" name="nombreeditorial" class="form-control form-control-lg" 
+                                       value="{{ editorial.nombreeditorial }}" required
+                                       oninput="this.value = this.value.toUpperCase()">
+                                <div class="form-text">El nombre debe ser único en el sistema.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">Dirección *</label>
+                                <textarea name="direccion" class="form-control" rows="3" required>{{ editorial.direccion }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2 text-warning">
+                                <i class="fas fa-address-card me-2"></i>Información de Contacto
+                            </h5>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Teléfono *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        <input type="tel" name="telefono" class="form-control" 
+                                               value="{{ editorial.telefono }}" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Email Contacto *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        <input type="email" name="emailcontacto" class="form-control" 
+                                               value="{{ editorial.emailcontacto }}" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">Sitio Web</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-globe"></i></span>
+                                        <input type="url" name="sitioweb" class="form-control" 
+                                               value="{{ editorial.sitioweb|default:'' }}">
+                                    </div>
+                                    <div class="form-text">Opcional - URL completa del sitio web.</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-bold">País Origen *</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-flag"></i></span>
+                                        <input type="text" name="paisorigen" class="form-control" 
+                                               value="{{ editorial.paisorigen }}" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información de Registro -->
+                        <div class="card bg-light mb-4">
+                            <div class="card-body">
+                                <h6 class="card-title text-muted">
+                                    <i class="fas fa-database me-2"></i>Información del Registro
+                                </h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <small class="text-muted">
+                                            <strong>ID Editorial:</strong> #{{ editorial.editorialid }}
+                                        </small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small class="text-muted">
+                                            <strong>Última actualización:</strong> Ahora
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            <strong>Nota:</strong> Los cambios se aplicarán inmediatamente después de guardar.
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="{% url 'lista_editoriales' %}" class="btn btn-secondary me-2">
+                                    <i class="fas fa-arrow-left me-2"></i>Volver al Listado
+                                </a>
+                                <a href="{% url 'eliminar_editorial' editorial.editorialid %}" 
+                                   class="btn btn-outline-danger">
+                                    <i class="fas fa-trash me-2"></i>Eliminar
+                                </a>
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-lg">
+                                <i class="fas fa-save me-2"></i>Actualizar Editorial
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.btn-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #ff8c00 100%);
+    color: white;
+    border: none;
+}
+.btn-warning:hover {
+    opacity: 0.9;
+    color: white;
+}
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.form-control:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Libro{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-custom text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-book-medical me-2"></i>Agregar Nuevo Libro
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Título *</label>
+                                <input type="text" name="titulo" class="form-control" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">ISBN *</label>
+                                <input type="text" name="isbn" class="form-control" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Autor *</label>
+                                <select name="autor" class="form-select" required>
+                                    <option value="">Seleccionar autor...</option>
+                                    {% for autor in autores %}
+                                    <option value="{{ autor.autorid }}">{{ autor.nombre }} {{ autor.apellido }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Editorial *</label>
+                                <select name="editorial" class="form-select" required>
+                                    <option value="">Seleccionar editorial...</option>
+                                    {% for editorial in editoriales %}
+                                    <option value="{{ editorial.editorialid }}">{{ editorial.nombreeditorial }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Género *</label>
+                                <select name="genero" class="form-select" required>
+                                    <option value="">Seleccionar género...</option>
+                                    <option value="FIC">Ficción</option>
+                                    <option value="ROM">Romance</option>
+                                    <option value="TER">Terror</option>
+                                    <option value="CIE">Ciencia Ficción</option>
+                                    <option value="FAN">Fantasía</option>
+                                    <option value="HIS">Histórico</option>
+                                    <option value="BIO">Biografía</option>
+                                    <option value="INF">Infantil</option>
+                                    <option value="POE">Poesía</option>
+                                    <option value="DRA">Drama</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Año Publicación *</label>
+                                <input type="number" name="anioPublicacion" class="form-control" 
+                                       min="1900" max="2030" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Precio Venta *</label>
+                                <input type="number" name="precioventa" class="form-control" 
+                                       step="0.01" min="0" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Stock Inicial</label>
+                                <input type="number" name="stock" class="form-control" value="0" min="0">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Descripción</label>
+                            <textarea name="descripcion" class="form-control" rows="4" 
+                                      placeholder="Descripción del libro..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_libros' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-custom">
+                                <i class="fas fa-save me-2"></i>Guardar Libro
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

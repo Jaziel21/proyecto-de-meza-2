@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid p-0">
+    <!-- Hero Section -->
+    <div class="bg-custom text-white py-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        <i class="fas fa-book-open me-3"></i>
+                        Librería Avanzada
+                    </h1>
+                    <p class="lead mb-4">
+                        Sistema de gestión integral para librerías modernas. 
+                        Controla inventario, ventas, clientes y autores en una sola plataforma.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="{% url 'inicio_sesion' %}" class="btn btn-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </a>
+                        <a href="/admin/" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-user-shield me-2"></i>Acceso Admin
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-6 text-center">
+                    <img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
+                         alt="Librería" class="img-fluid rounded shadow">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="container py-5">
+        <div class="row text-center mb-5">
+            <div class="col">
+                <h2 class="fw-bold">Características del Sistema</h2>
+                <p class="text-muted">Todas las herramientas que necesitas para gestionar tu librería</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-book fa-3x text-primary mb-3"></i>
+                        <h5>Gestión de Libros</h5>
+                        <p class="text-muted">Control completo del catálogo e inventario</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-3x text-success mb-3"></i>
+                        <h5>Gestión de Clientes</h5>
+                        <p class="text-muted">Base de datos completa de clientes</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-shopping-cart fa-3x text-warning mb-3"></i>
+                        <h5>Ventas y Facturación</h5>
+                        <p class="text-muted">Sistema completo de ventas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-bar fa-3x text-info mb-3"></i>
+                        <h5>Reportes y Análisis</h5>
+                        <p class="text-muted">Dashboard con métricas importantes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="bg-light py-4">
+        <div class="container">
+            <div class="row text-center">
+                <div class="col-md-3">
+                    <h4 class="fw-bold text-primary">500+</h4>
+                    <p class="text-muted mb-0">Libros Gestionados</p>
+                </div>
+                <div class="col-md-3">
+                    <h4 class="fw-bold text-success">1,200+</h4>
+                    <p class="text-muted mb-0">Clientes Satisfechos</p>
+                </div>
+                <div class="col-md-3">
+                    <h4 class="fw-bold text-warning">3,000+</h4>
+                    <p class="text-muted mb-0">Ventas Procesadas</p>
+                </div>
+                <div class="col-md-3">
+                    <h4 class="fw-bold text-info">50+</h4>
+                    <p class="text-muted mb-0">Autores Registrados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+
+<style>
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+}
+.card {
+    transition: transform 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+</style>
+{% endblock %}

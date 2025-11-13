@@ -1,0 +1,59 @@
+<div class="sidebar">
+    <div class="p-3">
+        <div class="text-center mb-4">
+            <div class="bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
+                 style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);">
+                <i class="fas fa-book-open fa-lg text-white"></i>
+            </div>
+            <h6 class="mb-0 fw-bold">Sistema de Gestión</h6>
+            <small class="text-muted">Librería AJMG</small>
+        </div>
+        
+        <nav class="nav flex-column">
+            <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" 
+               href="{% url 'dashboard' %}">
+                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+            
+            <a class="nav-link {% if 'autor' in request.resolver_match.url_name %}active{% endif %}" 
+               href="{% url 'lista_autores' %}">
+                <i class="fas fa-users me-2"></i>Autores
+            </a>
+            
+            <a class="nav-link {% if 'editorial' in request.resolver_match.url_name %}active{% endif %}" 
+               href="{% url 'lista_editoriales' %}">
+                <i class="fas fa-building me-2"></i>Editoriales
+            </a>
+            
+            <a class="nav-link {% if 'cliente' in request.resolver_match.url_name %}active{% endif %}" 
+               href="{% url 'lista_clientes' %}">
+                <i class="fas fa-address-book me-2"></i>Clientes
+            </a>
+            
+            <a class="nav-link {% if 'libro' in request.resolver_match.url_name and 'venta' not in request.resolver_match.url_name %}active{% endif %}" 
+               href="{% url 'lista_libros' %}">
+                <i class="fas fa-book me-2"></i>Libros
+            </a>
+            
+            <a class="nav-link {% if 'venta' in request.resolver_match.url_name %}active{% endif %}" 
+               href="{% url 'lista_ventas' %}">
+                <i class="fas fa-shopping-cart me-2"></i>Ventas
+            </a>
+            
+            <hr class="my-3">
+            
+            <!-- QUITAR EL ENLACE AL ADMIN -->
+            <!-- <a class="nav-link" href="/admin/" target="_blank">
+                <i class="fas fa-user-shield me-2"></i>Panel Admin
+            </a> -->
+            
+            <a class="nav-link" href="{% url 'perfil' %}">
+                <i class="fas fa-cog me-2"></i>Configuración
+            </a>
+            
+            <a class="nav-link text-danger" href="{% url 'logout' %}">
+                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
+            </a>
+        </nav>
+    </div>
+</div>

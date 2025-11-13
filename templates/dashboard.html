@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Librería AJMG 1194{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="display-5 fw-bold mb-3">Explora Mundos Nuevos en Librería AJMG 1194</h1>
+                <p class="lead mb-4">Tu próxima gran aventura te espera entre nuestras páginas.</p>
+                <a href="{% url 'lista_libros' %}" class="btn btn-light btn-lg">
+                    <i class="fas fa-book-open me-2"></i>Descubre Novedades
+                </a>
+            </div>
+            <div class="col-md-4 text-center">
+                <i class="fas fa-book-reader fa-6x text-white-50"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Estadísticas Rápidas -->
+    <div class="row mb-5">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);">
+                        <i class="fas fa-book fa-2x text-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-verde-oscuro">{{ total_libros }}</h3>
+                    <p class="text-muted mb-0">Total Libros</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);">
+                        <i class="fas fa-users fa-2x text-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-verde-oscuro">{{ total_clientes }}</h3>
+                    <p class="text-muted mb-0">Clientes Registrados</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);">
+                        <i class="fas fa-shopping-cart fa-2x text-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-verde-oscuro">{{ total_ventas }}</h3>
+                    <p class="text-muted mb-0">Ventas Realizadas</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card card-custom h-100">
+                <div class="card-body text-center p-4">
+                    <div class="rounded-circle bg-gradient d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 70px; height: 70px; background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-medio) 100%);">
+                        <i class="fas fa-chart-line fa-2x text-white"></i>
+                    </div>
+                    <h3 class="fw-bold text-verde-oscuro">${{ total_ingresos|default:"0" }}</h3>
+                    <p class="text-muted mb-0">Ingresos Totales</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Novedades y Acciones Rápidas -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card card-custom">
+                <div class="card-header card-header-custom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-star me-2"></i>Novedades y Recomendaciones
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-verde-oscuro mb-3">
+                                <i class="fas fa-bell me-2"></i>Alertas del Sistema
+                            </h6>
+                            {% if libros_bajo_stock %}
+                                <div class="alert alert-warning alert-custom">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <strong>Stock Bajo:</strong> {{ libros_bajo_stock.count }} libro(s) necesitan reabastecimiento.
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success alert-custom">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <strong>Todo en orden:</strong> No hay alertas de stock bajo.
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-verde-oscuro mb-3">
+                                <i class="fas fa-bolt me-2"></i>Acciones Rápidas
+                            </h6>
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'agregar_libro' %}" class="btn btn-custom">
+                                    <i class="fas fa-plus me-2"></i>Agregar Nuevo Libro
+                                </a>
+                                <a href="{% url 'agregar_venta' %}" class="btn btn-outline-custom">
+                                    <i class="fas fa-cart-plus me-2"></i>Registrar Nueva Venta
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-custom">
+                <div class="card-header card-header-custom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>Actividad Reciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item px-0">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-verde-claro rounded-circle p-2 me-3">
+                                    <i class="fas fa-book text-verde-oscuro"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Hoy</small>
+                                    <p class="mb-0 fw-bold">Nuevos libros agregados</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item px-0">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-verde-claro rounded-circle p-2 me-3">
+                                    <i class="fas fa-shopping-cart text-verde-oscuro"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted">Ayer</small>
+                                    <p class="mb-0 fw-bold">Ventas procesadas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.text-verde-oscuro { color: var(--verde-oscuro); }
+.text-verde-medio { color: var(--verde-medio); }
+.bg-verde-claro { background-color: var(--verde-claro); }
+</style>
+{% endblock %}

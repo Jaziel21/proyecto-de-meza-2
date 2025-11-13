@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Agregar Detalle a Venta{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-custom text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2"></i>Agregar Detalle a Venta
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Venta *</label>
+                            <select name="venta" class="form-select" required>
+                                <option value="">Seleccionar venta...</option>
+                                {% for venta in ventas %}
+                                <option value="{{ venta.ventaid }}">Venta #{{ venta.ventaid }} - {{ venta.cliente }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Libro *</label>
+                            <select name="libro" class="form-select" required>
+                                <option value="">Seleccionar libro...</option>
+                                {% for libro in libros %}
+                                <option value="{{ libro.libroid }}" 
+                                        data-precio="{{ libro.precioventa }}">
+                                    {{ libro.titulo }} - ${{ libro.precioventa }} (Stock: {{ libro.stock }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Cantidad *</label>
+                                <input type="number" name="cantidad" class="form-control" min="1" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Precio Unitario *</label>
+                                <input type="number" name="precioUnitario" class="form-control" 
+                                       step="0.01" min="0" required id="precioUnitario">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">IVA (%)</label>
+                            <input type="number" name="iva" class="form-control" value="16" step="0.01" min="0">
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_ventas' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-custom">
+                                <i class="fas fa-save me-2"></i>Agregar Detalle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const libroSelect = document.querySelector('select[name="libro"]');
+    const precioInput = document.getElementById('precioUnitario');
+    
+    libroSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const precio = selectedOption.getAttribute('data-precio');
+        if (precio) {
+            precioInput.value = precio;
+        }
+    });
+});
+</script>
+{% endblock %}

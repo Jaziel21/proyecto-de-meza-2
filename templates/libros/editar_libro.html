@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Libro{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Editar Libro: {{ libro.titulo }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">Título *</label>
+                                <input type="text" name="titulo" class="form-control" 
+                                       value="{{ libro.titulo }}" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">ISBN *</label>
+                                <input type="text" name="isbn" class="form-control" 
+                                       value="{{ libro.isbn }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Autor *</label>
+                                <select name="autor" class="form-select" required>
+                                    <option value="">Seleccionar autor...</option>
+                                    {% for autor in autores %}
+                                    <option value="{{ autor.autorid }}" 
+                                            {% if autor.autorid == libro.autor.autorid %}selected{% endif %}>
+                                        {{ autor.nombre }} {{ autor.apellido }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Editorial *</label>
+                                <select name="editorial" class="form-select" required>
+                                    <option value="">Seleccionar editorial...</option>
+                                    {% for editorial in editoriales %}
+                                    <option value="{{ editorial.editorialid }}" 
+                                            {% if editorial.editorialid == libro.editorial.editorialid %}selected{% endif %}>
+                                        {{ editorial.nombreeditorial }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Género *</label>
+                                <select name="genero" class="form-select" required>
+                                    <option value="">Seleccionar género...</option>
+                                    <option value="FIC" {% if libro.genero == 'FIC' %}selected{% endif %}>Ficción</option>
+                                    <option value="ROM" {% if libro.genero == 'ROM' %}selected{% endif %}>Romance</option>
+                                    <option value="TER" {% if libro.genero == 'TER' %}selected{% endif %}>Terror</option>
+                                    <option value="CIE" {% if libro.genero == 'CIE' %}selected{% endif %}>Ciencia Ficción</option>
+                                    <option value="FAN" {% if libro.genero == 'FAN' %}selected{% endif %}>Fantasía</option>
+                                    <option value="HIS" {% if libro.genero == 'HIS' %}selected{% endif %}>Histórico</option>
+                                    <option value="BIO" {% if libro.genero == 'BIO' %}selected{% endif %}>Biografía</option>
+                                    <option value="INF" {% if libro.genero == 'INF' %}selected{% endif %}>Infantil</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Año Publicación *</label>
+                                <input type="number" name="anioPublicacion" class="form-control" 
+                                       value="{{ libro.anioPublicacion }}" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Precio Venta *</label>
+                                <input type="number" name="precioventa" class="form-control" 
+                                       value="{{ libro.precioventa }}" step="0.01" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label

@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Editorial{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-building fa-4x text-danger mb-3"></i>
+                        <h3 class="text-danger">¿Eliminar Editorial?</h3>
+                        <p class="lead">Esta acción no se puede deshacer</p>
+                    </div>
+
+                    <!-- Información de la Editorial -->
+                    <div class="alert alert-info">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-info-circle me-2"></i>Información de la Editorial
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>ID:</strong> #{{ editorial.editorialid }}<br>
+                                <strong>Nombre:</strong> {{ editorial.nombreeditorial }}<br>
+                                <strong>País:</strong> {{ editorial.paisorigen }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Teléfono:</strong> {{ editorial.telefono }}<br>
+                                <strong>Email:</strong> {{ editorial.emailcontacto }}<br>
+                                <strong>Sitio Web:</strong> 
+                                {% if editorial.sitioweb %}
+                                    <a href="{{ editorial.sitioweb }}" target="_blank">Visitar</a>
+                                {% else %}
+                                    No disponible
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advertencias -->
+                    <div class="alert alert-warning">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-exclamation-circle me-2"></i>Advertencias Importantes
+                        </h5>
+                        <ul class="mb-0">
+                            <li>Esta acción <strong class="text-danger">NO se puede deshacer</strong></li>
+                            <li>Se eliminarán <strong>todos los datos</strong> de esta editorial</li>
+                            <li>Los libros asociados a esta editorial <strong>quedarán sin editorial</strong></li>
+                            <li>Esta operación afectará los reportes del sistema</li>
+                        </ul>
+                    </div>
+
+                    <!-- Verificación de libros asociados -->
+                    {% with libros_asociados=editorial.libro_set.all %}
+                    {% if libros_asociados %}
+                    <div class="alert alert-danger">
+                        <h5 class="alert-heading">
+                            <i class="fas fa-books me-2"></i>Libros Asociados
+                        </h5>
+                        <p class="mb-2">
+                            <strong>Esta editorial tiene {{ libros_asociados|length }} libro(s) asociado(s):</strong>
+                        </p>
+                        <ul class="mb-0">
+                            {% for libro in libros_asociados %}
+                            <li>{{ libro.titulo }} (ISBN: {{ libro.isbn }})</li>
+                            {% endfor %}
+                        </ul>
+                        <p class="mt-2 mb-0">
+                            <strong>Nota:</strong> Estos libros quedarán sin editorial asignada.
+                        </p>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+                        
+                        <!-- Confirmación por seguridad -->
+                        <div class="mb-3">
+                            <label for="confirmacion" class="form-label fw-bold text-danger">
+                                Para confirmar, escriba "ELIMINAR" en el siguiente campo:
+                            </label>
+                            <input type="text" id="confirmacion" class="form-control" 
+                                   placeholder="Escriba ELIMINAR para confirmar" required
+                                   oninput="toggleDeleteButton()">
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'editar_editorial' editorial.editorialid %}" class="btn btn-warning">
+                                <i class="fas fa-edit me-2"></i>Editar en lugar de Eliminar
+                            </a>
+                            <a href="{% url 'lista_editoriales' %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" id="deleteButton" class="btn btn-danger" disabled>
+                                <i class="fas fa-trash me-2"></i>Eliminar Permanentemente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.btn-danger:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+</style>
+
+<script>
+function toggleDeleteButton() {
+    const confirmacion = document.getElementById('confirmacion');
+    const deleteButton = document.getElementById('deleteButton');
+    
+    if (confirmacion.value.toUpperCase() === 'ELIMINAR') {
+        deleteButton.disabled = false;
+    } else {
+        deleteButton.disabled = true;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Deshabilitar el botón inicialmente
+    document.getElementById('deleteButton').disabled = true;
+    
+    // Confirmación adicional antes de enviar
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        if (!confirm('¿ESTÁ ABSOLUTAMENTE SEGURO? Esta acción es irreversible.')) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}

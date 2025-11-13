@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Venta #{{ venta.ventaid }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-receipt me-2"></i>Detalle de Venta #{{ venta.ventaid }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Información General -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Información de la Venta</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Número de Venta:</th>
+                                    <td>#{{ venta.ventaid }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Fecha:</th>
+                                    <td>{{ venta.fechaventa|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Cliente:</th>
+                                    <td>{{ venta.cliente.nombre }} {{ venta.cliente.apellido }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Email:</th>
+                                    <td>{{ venta.cliente.email }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Información de Pago</h5>
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Método de Pago:</th>
+                                    <td>
+                                        <span class="badge bg-secondary">{{ venta.get_metodopago_display }}</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Estado:</th>
+                                    <td>
+                                        {% if venta.estadoVenta == 'COMPLETADA' %}
+                                            <span class="badge bg-success">{{ venta.get_estadoVenta_display }}</span>
+                                        {% elif venta.estadoVenta == 'PENDIENTE' %}
+                                            <span class="badge bg-warning">{{ venta.get_estadoVenta_display }}</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">{{ venta.get_estadoVenta_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Descuento:</th>
+                                    <td>{{ venta.descuentoAplicado }}%</td>
+                                </tr>
+                                <tr>
+                                    <th>Total:</th>
+                                    <td><strong>${{ venta.montototal }}</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Detalles de la Venta -->
+                    <h5 class="border-bottom pb-2">Libros Vendidos</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Libro</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio Unitario</th>
+                                    <th>IVA</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for detalle in venta.detalles.all %}
+                                <tr>
+                                    <td>{{ detalle.libro.titulo }}</td>
+                                    <td>{{ detalle.cantidad }}</td>
+                                    <td>${{ detalle.precioUnitario }}</td>
+                                    <td>{{ detalle.iva }}%</td>
+                                    <td>${{ detalle.subtotal }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="4" class="text-end"><strong>Total:</strong></td>
+                                    <td><strong>${{ venta.montototal }}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="{% url 'lista_ventas' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Volver a Ventas
+                        </a>
+                        <button onclick="window.print()" class="btn btn-outline-primary">
+                            <i class="fas fa-print me-2"></i>Imprimir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    .sidebar, .navbar, .btn {
+        display: none !important;
+    }
+    .main-content {
+        margin-left: 0 !important;
+    }
+}
+</style>
+{% endblock %}

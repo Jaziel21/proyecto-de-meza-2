@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Venta #{{ venta.ventaid }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Editar Venta #{{ venta.ventaid }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="ventaForm">
+                        {% csrf_token %}
+                        
+                        <!-- Información General -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-info-circle me-2"></i>Información General
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Cliente *</label>
+                                    <select name="cliente" class="form-select" required>
+                                        <option value="">Seleccionar cliente...</option>
+                                        {% for cliente in clientes %}
+                                        <option value="{{ cliente.clienteid }}" 
+                                                {% if cliente.clienteid == venta.cliente.clienteid %}selected{% endif %}>
+                                            {{ cliente.nombre }} {{ cliente.apellido }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Método de Pago *</label>
+                                    <select name="metodopago" class="form-select" required>
+                                        <option value="">Seleccionar método...</option>
+                                        <option value="EFECTIVO" {% if venta.metodopago == 'EFECTIVO' %}selected{% endif %}>Efectivo</option>
+                                        <option value="TARJETA" {% if venta.metodopago == 'TARJETA' %}selected{% endif %}>Tarjeta</option>
+                                        <option value="TRANSFERENCIA" {% if venta.metodopago == 'TRANSFERENCIA' %}selected{% endif %}>Transferencia</option>
+                                        <option value="DIGITAL" {% if venta.metodopago == 'DIGITAL' %}selected{% endif %}>Pago Digital</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Estado de la Venta *</label>
+                                    <select name="estadoVenta" class="form-select" required>
+                                        <option value="PENDIENTE" {% if venta.estadoVenta == 'PENDIENTE' %}selected{% endif %}>Pendiente</option>
+                                        <option value="COMPLETADA" {% if venta.estadoVenta == 'COMPLETADA' %}selected{% endif %}>Completada</option>
+                                        <option value="CANCELADA" {% if venta.estadoVenta == 'CANCELADA' %}selected{% endif %}>Cancelada</option>
+                                        <option value="EN_PROCESO" {% if venta.estadoVenta == 'EN_PROCESO' %}selected{% endif %}>En Proceso</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Descuento Aplicado (%)</label>
+                                    <input type="number" name="descuentoAplicado" class="form-control" 
+                                           value="{{ venta.descuentoAplicado }}" min="0" max="100" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Detalles Existentes -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-list me-2"></i>Detalles de Venta Existentes
+                            </h5>
+                            
+                            {% if venta.detalles.all %}
+                            <div class="table-responsive">
+                                <table class="table table-striped table-sm">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Libro</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio Unit.</th>
+                                            <th>IVA</th>
+                                            <th>Subtotal</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for detalle in venta.detalles.all %}
+                                        <tr>
+                                            <td>{{ detalle.libro.titulo }}</td>
+                                            <td>{{ detalle.cantidad }}</td>
+                                            <td>${{ detalle.precioUnitario }}</td>
+                                            <td>{{ detalle.iva }}%</td>
+                                            <td>${{ detalle.subtotal }}</td>
+                                            <td>
+                                                <a href="{% url 'eliminar_detalle_venta' detalle.detalleDeLaVentaid %}" 
+                                                   class="btn btn-sm btn-outline-danger"
+                                                   onclick="return confirm('¿Eliminar este detalle?')">
+                                                    <i class="fas fa-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-warning">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                No hay detalles registrados para esta venta.
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Agregar Nuevos Detalles -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="fas fa-plus-circle me-2"></i>Agregar Nuevos Detalles
+                            </h5>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-5">
+                                    <label class="form-label">Libro</label>
+                                    <select class="form-select" id="libroSelect">
+                                        <option value="">Seleccionar libro...</option>
+                                        {% for libro in libros %}
+                                        <option value="{{ libro.libroid }}" 
+                                                data-precio="{{ libro.precioventa }}"
+                                                data-stock="{{ libro.stock }}">
+                                            {{ libro.titulo }} - ${{ libro.precioventa }} (Stock: {{ libro.stock }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Cantidad</label>
+                                    <input type="number" class="form-control" id="cantidadInput" min="1" value="1">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Precio Unitario</label>
+                                    <input type="number" class="form-control" id="precioInput" step="0.01">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="button" class="btn btn-success w-100" id="agregarDetalle">
+                                        <i class="fas fa-plus"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Tabla de Nuevos Detalles -->
+                            <div class="table-responsive">
+                                <table class="table table-sm" id="tablaNuevosDetalles">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th>Libro</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio Unit.</th>
+                                            <th>IVA</th>
+                                            <th>Subtotal</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Los nuevos detalles se agregarán aquí -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Resumen -->
+                        <div class="mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Resumen de la Venta</h6>
+                                            <div class="d-flex justify-content-between">
+                                                <span>Subtotal:</span>
+                                                <span id="subtotalResumen">$0.00</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span>Descuento ({{ venta.descuentoAplicado }}%):</span>
+                                                <span id="descuentoResumen">$0.00</span>
+                                            </div>
+                                            <hr>
+                                            <div class="d-flex justify-content-between fw-bold">
+                                                <span>Total:</span>
+                                                <span id="totalResumen">$0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="nuevos_detalles" id="nuevosDetallesInput">
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="{% url 'detalle_venta' venta.ventaid %}" class="btn btn-outline-info me-2">
+                                    <i class="fas fa-eye me-2"></i>Ver Detalle
+                                </a>
+                                <a href="{% url 'lista_ventas' %}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancelar
+                                </a>
+                            </div>
+                            <div>
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-save me-2"></i>Actualizar Venta
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nuevosDetalles = [];
+    
+    // Actualizar precio cuando se selecciona un libro
+    document.getElementById('libroSelect').addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        const precio = selectedOption.getAttribute('data-precio');
+        const stock = selectedOption.getAttribute('data-stock');
+        
+        if (precio) {
+            document.getElementById('precioInput').value = precio;
+        }
+        
+        // Actualizar cantidad máxima basada en el stock
+        if (stock) {
+            document.getElementById('cantidadInput').max = stock;
+        }
+    });
+    
+    // Agregar nuevo detalle a la tabla
+    document.getElementById('agregarDetalle').addEventListener('click', function() {
+        const libroSelect = document.getElementById('libroSelect');
+        const selectedOption = libroSelect.options[libroSelect.selectedIndex];
+        const cantidad = document.getElementById('cantidadInput').value;
+        const precio = document.getElementById('precioInput').value;
+        
+        if (!selectedOption.value || !cantidad || !precio) {
+            alert('Por favor complete todos los campos del detalle');
+            return;
+        }
+        
+        const libroId = selectedOption.value;
+        const libroNombre = selectedOption.text.split(' - ')[0];
+        const iva = 16; // IVA por defecto
+        const subtotal = (cantidad * precio).toFixed(2);
+        
+        // Agregar a la tabla
+        const tablaBody = document.querySelector('#tablaNuevosDetalles tbody');
+        const row = tablaBody.insertRow();
+        row.innerHTML = `
+            <td>${libroNombre}</td>
+            <td>${cantidad}</td>
+            <td>$${precio}</td>
+            <td>${iva}%</td>
+            <td>$${subtotal}</td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger remove-row">
+                    <i class="fas fa-times"></i>
+                </button>
+            </td>
+        `;
+        
+        // Agregar al array de nuevos detalles
+        nuevosDetalles.push({
+            libro: libroId,
+            cantidad: parseInt(cantidad),
+            precioUnitario: parseFloat(precio),
+            iva: iva,
+            subtotal: parseFloat(subtotal)
+        });
+        
+        // Actualizar resumen
+        actualizarResumen();
+        
+        // Limpiar campos
+        libroSelect.value = '';
+        document.getElementById('cantidadInput').value = 1;
+        document.getElementById('precioInput').value = '';
+        
+        // Agregar evento para eliminar fila
+        row.querySelector('.remove-row').addEventListener('click', function() {
+            const index = Array.from(tablaBody.rows).indexOf(row);
+            nuevosDetalles.splice(index, 1);
+            row.remove();
+            actualizarResumen();
+        });
+    });
+    
+    function actualizarResumen() {
+        const subtotal = nuevosDetalles.reduce((sum, detalle) => sum + detalle.subtotal, 0);
+        const descuento = subtotal * ({{ venta.descuentoAplicado }} / 100);
+        const total = subtotal - descuento;
+        
+        document.getElementById('subtotalResumen').textContent = `$${subtotal.toFixed(2)}`;
+        document.getElementById('descuentoResumen').textContent = `$${descuento.toFixed(2)}`;
+        document.getElementById('totalResumen').textContent = `$${total.toFixed(2)}`;
+    }
+    
+    // Calcular resumen inicial
+    actualizarResumen();
+    
+    // Actualizar resumen cuando cambia el descuento
+    document.querySelector('input[name="descuentoAplicado"]').addEventListener('change', actualizarResumen);
+    
+    // Preparar datos antes de enviar el formulario
+    document.getElementById('ventaForm').addEventListener('submit', function(e) {
+        document.getElementById('nuevosDetallesInput').value = JSON.stringify(nuevosDetalles);
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

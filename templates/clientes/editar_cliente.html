@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Cliente{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit me-2"></i>Editar Cliente: {{ cliente.nombre }} {{ cliente.apellido }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nombre *</label>
+                                <input type="text" name="nombre" class="form-control" 
+                                       value="{{ cliente.nombre }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Apellido *</label>
+                                <input type="text" name="apellido" class="form-control" 
+                                       value="{{ cliente.apellido }}" required>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email *</label>
+                                <input type="email" name="email" class="form-control" 
+                                       value="{{ cliente.email }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Teléfono *</label>
+                                <input type="tel" name="telefono" class="form-control" 
+                                       value="{{ cliente.telefono }}" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Dirección *</label>
+                            <textarea name="direccion" class="form-control" rows="3" required>{{ cliente.direccion }}</textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Preferencias de Género</label>
+                            <select name="preferenciasgenero" class="form-select" multiple>
+                                <option value="FIC" {% if "FIC" in cliente.preferenciasgenero %}selected{% endif %}>Ficción</option>
+                                <option value="ROM" {% if "ROM" in cliente.preferenciasgenero %}selected{% endif %}>Romance</option>
+                                <option value="TER" {% if "TER" in cliente.preferenciasgenero %}selected{% endif %}>Terror</option>
+                                <option value="CIE" {% if "CIE" in cliente.preferenciasgenero %}selected{% endif %}>Ciencia Ficción</option>
+                                <option value="FAN" {% if "FAN" in cliente.preferenciasgenero %}selected{% endif %}>Fantasía</option>
+                                <option value="HIS" {% if "HIS" in cliente.preferenciasgenero %}selected{% endif %}>Histórico</option>
+                                <option value="BIO" {% if "BIO" in cliente.preferenciasgenero %}selected{% endif %}>Biografía</option>
+                                <option value="INF" {% if "INF" in cliente.preferenciasgenero %}selected{% endif %}>Infantil</option>
+                            </select>
+                            <small class="text-muted">Mantén presionado Ctrl para seleccionar múltiples géneros</small>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-save me-2"></i>Actualizar Cliente
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
